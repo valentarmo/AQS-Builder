@@ -1,0 +1,5 @@
+.vscode
+ansible/*.ini
+**/*.pem
+taskcat.yaml
+secrets/*
