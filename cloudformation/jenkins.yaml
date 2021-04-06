@@ -1,4 +1,5 @@
 Description: Create resources for a simple Jenkins build environment
+
 Parameters:
   KeyName:
     Description: Name of an existing EC2 KeyPair
@@ -7,6 +8,7 @@ Parameters:
     Description: AWS Region
     Type: String
     AllowedValues: [us-east-1, us-west-1, us-east-2, us-west-2]
+
 Mappings:
   RegionMap:
     us-east-1:
@@ -17,6 +19,7 @@ Mappings:
       AMI: ami-01aab85a5e4a5a0fe
     us-west-2:
       AMI: ami-0e999cbd62129e3b1
+
 Resources:
   SSHSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -27,6 +30,7 @@ Resources:
           FromPort: 22
           IpProtocol: tcp
           ToPort: 22
+
   JenkinsSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -40,6 +44,7 @@ Resources:
           FromPort: 8080
           IpProtocol: tcp
           ToPort: 8080
+
   EC2Instance:
     Type: 'AWS::EC2::Instance'
     Properties:
@@ -47,6 +52,7 @@ Resources:
       ImageId: !FindInMap [RegionMap, !Ref Region, AMI]
       InstanceType: t2.micro
       SecurityGroups: [!Ref SSHSecurityGroup, !Ref JenkinsSecurityGroup]
+
 Outputs:
   PublicIP:
     Value: !GetAtt EC2Instance.PublicIp

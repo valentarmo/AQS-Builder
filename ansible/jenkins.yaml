@@ -2,11 +2,40 @@
   remote_user: ec2-user
   become: yes
 
+  vars:
+    AQSStackName: "{{ lookup('env', 'AQS_STACK_NAME') }}"
+    AQSGeneratorsStackName: "{{ lookup('env', 'AQS_GENERATORS_STACK_NAME') }}"
+    AQSGeneratorsKeyName: "{{ lookup('env', 'AQS_GENERATORS_KEY_NAME') }}"
+    AQSGeneratorsKeyS3Bucket: "{{ lookup('env', 'AQS_GENERATORS_KEY_S3_BUCKET') }}"
+    AQSGeneratorsKeyS3Path: "{{ lookup('env', 'AQS_GENERATORS_KEY_S3_PATH') }}"
+    AQSS3BucketPrefix: "{{ lookup('env', 'AQS_S3_BUCKET_PREFIX') }}"
+    AwsAccessKeyId: "{{ lookup('env', 'AQS_AWS_ACCESS_KEY_ID') }}"
+    AwsSecretAccessKey: "{{ lookup('env', 'AQS_AWS_SECRET_ACCESS_KEY') }}"
+    AwsDefaultRegion: "{{ lookup('env', 'AQS_AWS_DEFAULT_REGION') }}"
+    DockerUserName: "{{ lookup('env', 'AQS_DOCKER_USER') }}"
+    DockerPassword: "{{ lookup('env', 'AQS_DOCKER_PASSWORD') }}"
+
   tasks:
     - name: Update Packages
       yum:
         name: '*'
         state: latest
+
+    - name: Set and Append environment variables to profile
+      shell: |
+        echo "export AQS_STACK_NAME={{ AQSStackName }}" >> /etc/profile
+        echo "export AQS_GENERATORS_STACK_NAME={{ AQSGeneratorsStackName }}" >> /etc/profile
+        echo "export AQS_GENERATORS_KEY_NAME={{ AQSGeneratorsKeyName }}" >> /etc/profile
+        echo "export AQS_GENERATORS_KEY_S3_BUCKET={{ AQSGeneratorsKeyS3Bucket }}" >> /etc/profile
+        echo "export AQS_GENERATORS_KEY_S3_PATH={{ AQSGeneratorsKeyS3Path }}" >> /etc/profile
+        echo "export AQS_S3_BUCKET_PREFIX={{ AQSS3BucketPrefix }}" >> /etc/profile
+        echo "export AWS_ACCESS_KEY_ID={{ AwsAccessKeyId }}" >> /etc/profile
+        echo "export AWS_SECRET_ACCESS_KEY={{ AwsSecretAccessKey }}" >> /etc/profile
+        echo "export AWS_DEFAULT_REGION={{ AwsDefaultRegion }}" >> /etc/profile
+        echo "export DOCKER_USER={{ DockerUserName }}" >> /etc/profile
+        echo "export DOCKER_PASSWORD={{ DockerPassword }}" >> /etc/profile
+        echo "export ANSIBLE_HOST_KEY_CHECKING=false" >> /etc/profile
+        source /etc/profile
 
     - name: Download Jenkins
       get_url:
@@ -47,8 +76,13 @@
     - name: Install python3
       yum:
         name: python3
-    
-    - name: Install taskcat
-      pip:
-        name: taskcat
+
+    - name: Install pipenv and taskcat
+      pip: 
+        name:
+          - pipenv
+          - taskcat
         executable: pip3
+
+    - name: Install ansible
+      shell: sudo amazon-linux-extras install ansible2 -y
