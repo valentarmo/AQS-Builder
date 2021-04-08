@@ -12,11 +12,8 @@ config_file_help() {
             AQSGeneratorsKeyName=<EC2 Key Pair Name for the Generator Instances>
             AQSGeneratorsKeyS3Bucket=<Name of the S3 Bucket with the Key for the Generator Instances>
             AQSGeneratorsKeyS3Path=<Path of the Key withing the Bucket>
-            AwsAccessKeyId=<AWS Access key>
-            AwsSecretAccessKey=<AWS Secret Access Key>
-            AwsDefaultRegion=<AWS Default Region>
-            DockerUserName=<Docker Hub User Name>
-            DockerPassword=<Docker Hub Password>"
+            AQSGeneratorsDockerImageTagName=<Name for the docker tag image>
+            AwsDefaultRegion=<AWS Default Region>"
 }
 
 usage() {
@@ -42,13 +39,9 @@ AQSGeneratorsStackName="${AQSGeneratorsStackName/$'\r'/}"
 AQSGeneratorsKeyName="${AQSGeneratorsKeyName/$'\r'/}"
 AQSGeneratorsKeyS3Bucket="${AQSGeneratorsKeyS3Bucket/$'\r'/}"
 AQSGeneratorsKeyS3Path="${AQSGeneratorsKeyS3Path/$'\r'/}"
+AQSGeneratorsDockerImageTagName="${AQSGeneratorsDockerImageTagName/$'\r'/}"
 
-AwsAccessKeyId="${AwsAccessKeyId/$'\r'/}"
-AwsSecretAccessKey="${AwsSecretAccessKey/$'\r'/}"
 AwsDefaultRegion="${AwsDefaultRegion/$'\r'/}"
-
-DockerUserName="${DockerUserName/$'\r'/}"
-DockerPassword="${DockerPassword/$'\r'/}"
 
 if [ -z "$JenkinsStackName" ]; then
     echo "Missing JenkinsStackName"
@@ -110,8 +103,8 @@ if [ -z "$AQSGeneratorsKeyS3Path" ]; then
     exit 2
 fi
 
-if [ -z "$AwsSecretAccessKey" ]; then
-    echo "Missing AwsSecretAccessKey"
+if [ -z "$AQSGeneratorsDockerImageTagName" ]; then
+    echo "Missing AQSGeneratorsDockerImageTagName"
     config_file_help
     exit 2
 fi
@@ -122,33 +115,17 @@ if [ -z "$AwsDefaultRegion" ]; then
     exit 2
 fi
 
-if [ -z "$DockerUserName" ]; then
-    echo "Missing DockerUserName"
-    config_file_help
-    exit 2
-fi
-
-if [ -z "$DockerPassword" ]; then
-    echo "Missing DockerPassword"
-    config_file_help
-    exit 2
-fi
-
 export AQS_STACK_NAME="$AQSStackName"
 
 export AQS_GENERATORS_STACK_NAME="$AQSGeneratorsStackName"
 export AQS_GENERATORS_KEY_NAME="$AQSGeneratorsKeyName"
 export AQS_GENERATORS_KEY_S3_BUCKET="$AQSGeneratorsKeyS3Bucket"
 export AQS_GENERATORS_KEY_S3_PATH="$AQSGeneratorsKeyS3Path"
+export AQS_GENERATORS_DOCKER_IMAGE_TAG_NAME="$AQSGeneratorsDockerImageTagName"
 
 export AQS_S3_BUCKET_PREFIX="$AQSS3BucketPrefix"
 
-export AQS_AWS_ACCESS_KEY_ID="$AwsAccessKeyId"
-export AQS_AWS_SECRET_ACCESS_KEY="$AwsSecretAccessKey"
 export AQS_AWS_DEFAULT_REGION="$AwsDefaultRegion"
-
-export AQS_DOCKER_USER=$DockerUserName
-export AQS_DOCKER_PASSWORD=$DockerPassword
 
 export ANSIBLE_HOST_KEY_CHECKING=false
 
@@ -157,6 +134,6 @@ python scripts/ansible-setup.py --StackName "$JenkinsStackName" \
                                 --Region "$AwsDefaultRegion" \
                                 --PrivateKeyS3Bucket "$JenkinsKeyS3Bucket" \
                                 --PrivateKeyS3FilePath "$JenkinsKeyS3Path"
-sleep 5
+sleep 30
 ansible-playbook -i ansible/hosts.ini ansible/jenkins.yaml
 exit

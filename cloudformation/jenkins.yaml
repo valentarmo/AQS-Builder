@@ -50,7 +50,7 @@ Resources:
     Properties:
       KeyName: !Ref KeyName
       ImageId: !FindInMap [RegionMap, !Ref Region, AMI]
-      InstanceType: t2.micro
+      InstanceType: t3.small
       SecurityGroups: [!Ref SSHSecurityGroup, !Ref JenkinsSecurityGroup]
 
 Outputs:

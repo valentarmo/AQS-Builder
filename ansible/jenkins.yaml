@@ -14,6 +14,7 @@
     AwsDefaultRegion: "{{ lookup('env', 'AQS_AWS_DEFAULT_REGION') }}"
     DockerUserName: "{{ lookup('env', 'AQS_DOCKER_USER') }}"
     DockerPassword: "{{ lookup('env', 'AQS_DOCKER_PASSWORD') }}"
+    AQSGeneratorsDockerImageTagName: "{{ lookup('env', 'AQS_GENERATORS_DOCKER_IMAGE_TAG_NAME') }}"
 
   tasks:
     - name: Update Packages
@@ -21,13 +22,14 @@
         name: '*'
         state: latest
 
-    - name: Set and Append environment variables to profile
+    - name: Append environment variables to profile
       shell: |
         echo "export AQS_STACK_NAME={{ AQSStackName }}" >> /etc/profile
         echo "export AQS_GENERATORS_STACK_NAME={{ AQSGeneratorsStackName }}" >> /etc/profile
         echo "export AQS_GENERATORS_KEY_NAME={{ AQSGeneratorsKeyName }}" >> /etc/profile
         echo "export AQS_GENERATORS_KEY_S3_BUCKET={{ AQSGeneratorsKeyS3Bucket }}" >> /etc/profile
         echo "export AQS_GENERATORS_KEY_S3_PATH={{ AQSGeneratorsKeyS3Path }}" >> /etc/profile
+        echo "export AQS_GENERATORS_DOCKER_IMAGE_TAG_NAME={{ AQSGeneratorsDockerImageTagName }}" >> /etc/profile
         echo "export AQS_S3_BUCKET_PREFIX={{ AQSS3BucketPrefix }}" >> /etc/profile
         echo "export AWS_ACCESS_KEY_ID={{ AwsAccessKeyId }}" >> /etc/profile
         echo "export AWS_SECRET_ACCESS_KEY={{ AwsSecretAccessKey }}" >> /etc/profile
@@ -35,7 +37,6 @@
         echo "export DOCKER_USER={{ DockerUserName }}" >> /etc/profile
         echo "export DOCKER_PASSWORD={{ DockerPassword }}" >> /etc/profile
         echo "export ANSIBLE_HOST_KEY_CHECKING=false" >> /etc/profile
-        source /etc/profile
 
     - name: Download Jenkins
       get_url:
@@ -73,16 +74,39 @@
       debug:
         var: password.stdout
 
+    - name: Read environment variables from Profile into Jenkins
+      shell: |
+        echo "source /etc/profile" >> /etc/sysconfig/jenkins
+        /etc/init.d/jenkins restart
+
     - name: Install python3
       yum:
         name: python3
 
-    - name: Install pipenv and taskcat
+    - name: Install python packages
       pip: 
         name:
-          - pipenv
           - taskcat
+          - boto3
+          - pycountry
         executable: pip3
 
     - name: Install ansible
       shell: sudo amazon-linux-extras install ansible2 -y
+
+    - name: Install docker
+      shell: |
+        amazon-linux-extras install docker -y
+        usermod -a -G docker ec2-user
+
+    - name: Start Docker as a service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+        daemon_reload: yes
+
+    - name: Change docker.sock permissions
+      file:
+        path: /var/run/docker.sock
+        mode: '666'
