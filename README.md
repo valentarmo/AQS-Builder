@@ -1,27 +1,40 @@
-Setup server default everything
+# AQS Builder
+Setup the Jenkins server for [AQS](https://github.com/valentarmo/AQS) and [AQS Generators](https://github.com/valentarmo/AQS-Generator)
 
-Sample conf file
+## Deployment
+The deployment is performed using cloudformation, Ansible and python scripts.
 
-JenkinsStackName="jenkins"
-JenkinsKeyName="jenkinskey"
-JenkinsKeyS3Bucket="my-key-pairs-bucket"
-JenkinsKeyS3Path="jenkinskey.pem"
-AQSStackName="aqs"
-AQSS3BucketPrefix="my-prefix"
-AQSGeneratorsStackName="aqsgenerators"
-AQSGeneratorsKeyName="aqsgenskey"
-AQSGeneratorsKeyS3Bucket="my-key-pairs-bucket"
-AQSGeneratorsKeyS3Path="aqsgenskey.pem"
-AQSGeneratorsDockerImageTagName="aqs-data-generators"
-AwsDefaultRegion="us-east-2"
+To deploy use `setup.sh` with a configuration file.
 
-set up in credentials
+    $ ./setup.sh <Configuration File>
 
-AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-DOCKER_CREDENTIALS = credentials('docker-credentials')
+The configuration file should look something like this
 
-recommended install blue ocean
+    JenkinsStackName="jenkins"
+    JenkinsKeyName="jenkinskey"
+    JenkinsKeyS3Bucket="my-key-pairs-bucket"
+    JenkinsKeyS3Path="jenkinskey.pem"
+    AQSStackName="aqs"
+    AQSS3BucketPrefix="my-prefix"
+    AQSGeneratorsStackName="aqsgenerators"
+    AQSGeneratorsKeyName="aqsgenskey"
+    AQSGeneratorsKeyS3Bucket="my-key-pairs-bucket"
+    AQSGeneratorsKeyS3Path="aqsgenskey.pem"
+    AQSGeneratorsDockerImageTagName="aqs-data-generators"
+    AwsDefaultRegion="us-east-2"
 
-under Configure System
-set PATH+EXTRA=/usr/local/bin
+Near the end of the server's deployment you should see the server's public ip address and its administrator password as an output from Ansible.
+
+Copy the password and move to configure the server from a browser. During the setup wizard pick Install suggested plugins.
+
+## Additional Server Configuration
+For the pipelines for AQS and AQS Generators to work it's necessary to setup some credentials. `Manage Jenkins > Manage Credentials > Jenkins > Global Credentials > Add Credentials`
+
+Add a Username/Password credential for Docker, put `docker-credentials` in the ID field.
+
+Add Secret Text credentials for the AWS Access Key ID (put `aws-access-key-id` in the ID field) and AWS Secret Access Key (put `aws-secret-access-key` in the ID field)
+
+
+## Pipelines
+Pipeline can be easily setup by installing the Blue Ocean plugin and using a GitHub Token.
+

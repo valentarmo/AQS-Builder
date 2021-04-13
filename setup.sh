@@ -128,12 +128,12 @@ export AQS_S3_BUCKET_PREFIX="$AQSS3BucketPrefix"
 export AQS_AWS_DEFAULT_REGION="$AwsDefaultRegion"
 
 export ANSIBLE_HOST_KEY_CHECKING=false
+export ANSIBLE_SSH_RETRIES=10
 
 python scripts/ansible-setup.py --StackName "$JenkinsStackName" \
                                 --KeyName "$JenkinsKeyName" \
                                 --Region "$AwsDefaultRegion" \
                                 --PrivateKeyS3Bucket "$JenkinsKeyS3Bucket" \
                                 --PrivateKeyS3FilePath "$JenkinsKeyS3Path"
-sleep 30
 ansible-playbook -i ansible/hosts.ini ansible/jenkins.yaml
 exit

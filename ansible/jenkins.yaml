@@ -37,6 +37,7 @@
         echo "export DOCKER_USER={{ DockerUserName }}" >> /etc/profile
         echo "export DOCKER_PASSWORD={{ DockerPassword }}" >> /etc/profile
         echo "export ANSIBLE_HOST_KEY_CHECKING=false" >> /etc/profile
+        echo "export ANSIBLE_SSH_RETRIES=10" >> /etc/profile
 
     - name: Download Jenkins
       get_url:
