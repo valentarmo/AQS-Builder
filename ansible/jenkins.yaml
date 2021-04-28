@@ -8,7 +8,14 @@
     AQSGeneratorsKeyName: "{{ lookup('env', 'AQS_GENERATORS_KEY_NAME') }}"
     AQSGeneratorsKeyS3Bucket: "{{ lookup('env', 'AQS_GENERATORS_KEY_S3_BUCKET') }}"
     AQSGeneratorsKeyS3Path: "{{ lookup('env', 'AQS_GENERATORS_KEY_S3_PATH') }}"
-    AQSS3BucketPrefix: "{{ lookup('env', 'AQS_S3_BUCKET_PREFIX') }}"
+    AQSGeneratorsNumberOfInstances: "{{ lookup('env', 'AQS_GENERATORS_NUMBER_OF_INSTANCES') }}"
+    AQSBucketsStackName: "{{ lookup('env', 'AQS_BUCKETS_STACK_NAME') }}"
+    AQSS3GlueBucketName: "{{ lookup('env', 'AQS_S3_GLUE_BUCKET_NAME') }}"
+    AQSS3RawDataBucketName: "{{ lookup('env', 'AQS_S3_RAW_DATA_BUCKET_NAME') }}"
+    AQSS3ProcessedDataBucketName: "{{ lookup('env', 'AQS_S3_PROCESSED_DATA_BUCKET_NAME') }}"
+    AQSS3AthenaBucketName: "{{ lookup('env', 'AQS_S3_ATHENA_BUCKET_NAME') }}"
+    AQSS3GlueScriptsBucketName: "{{ lookup('env', 'AQS_S3_GLUE_SCRIPTS_BUCKET_NAME') }}"
+    AQSS3TaskcatBucketName: "{{ lookup('env', 'AQS_S3_TASKCAT_BUCKET_NAME') }}"
     AwsAccessKeyId: "{{ lookup('env', 'AQS_AWS_ACCESS_KEY_ID') }}"
     AwsSecretAccessKey: "{{ lookup('env', 'AQS_AWS_SECRET_ACCESS_KEY') }}"
     AwsDefaultRegion: "{{ lookup('env', 'AQS_AWS_DEFAULT_REGION') }}"
@@ -30,7 +37,14 @@
         echo "export AQS_GENERATORS_KEY_S3_BUCKET={{ AQSGeneratorsKeyS3Bucket }}" >> /etc/profile
         echo "export AQS_GENERATORS_KEY_S3_PATH={{ AQSGeneratorsKeyS3Path }}" >> /etc/profile
         echo "export AQS_GENERATORS_DOCKER_IMAGE_TAG_NAME={{ AQSGeneratorsDockerImageTagName }}" >> /etc/profile
-        echo "export AQS_S3_BUCKET_PREFIX={{ AQSS3BucketPrefix }}" >> /etc/profile
+        echo "export AQS_GENERATORS_NUMBER_OF_INSTANCES={{ AQSGeneratorsNumberOfInstances }}" >> /etc/profile
+        echo "export AQS_BUCKETS_STACK_NAME={{ AQSBucketsStackName }}" >> /etc/profile
+        echo "export AQS_S3_GLUE_BUCKET_NAME={{ AQSS3GlueBucketName }}" >> /etc/profile
+        echo "export AQS_S3_RAW_DATA_BUCKET_NAME={{ AQSS3RawDataBucketName }}" >> /etc/profile
+        echo "export AQS_S3_PROCESSED_DATA_BUCKET_NAME={{ AQSS3ProcessedDataBucketName }}" >> /etc/profile
+        echo "export AQS_S3_ATHENA_BUCKET_NAME={{ AQSS3AthenaBucketName }}" >> /etc/profile
+        echo "export AQS_S3_GLUE_SCRIPTS_BUCKET_NAME={{ AQSS3GlueScriptsBucketName }}" >> /etc/profile
+        echo "export AQS_S3_TASKCAT_BUCKET_NAME={{ AQSS3TaskcatBucketName }}" >> /etc/profile
         echo "export AWS_ACCESS_KEY_ID={{ AwsAccessKeyId }}" >> /etc/profile
         echo "export AWS_SECRET_ACCESS_KEY={{ AwsSecretAccessKey }}" >> /etc/profile
         echo "export AWS_DEFAULT_REGION={{ AwsDefaultRegion }}" >> /etc/profile

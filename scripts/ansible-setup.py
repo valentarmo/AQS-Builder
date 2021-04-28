@@ -9,7 +9,7 @@ import os
 def create_stack(stack_name, key_name, region, client):
     print('Creating CloudFormation Stack')
     dir_path = os.path.dirname(__file__)
-    template_path = os.path.join(dir_path, '../', 'cloudformation/', 'jenkins.yaml')
+    template_path = os.path.join(dir_path, '..', 'aws', 'cfn', 'jenkins.yaml')
     template_body = ''
     with open(template_path, 'r') as f:
         template_body = f.read()
